@@ -17,7 +17,35 @@ To create a Graph, just use the static factory method and pass your `Environment
 Graph<String> graph = Graph.create(env);
 ```
 
+Since Graphs are made up of Nodes, you need a `Node` to do any work. Create one from by calling the `Graph.node()` method (or one of its variants). The zero-arg version will return an "anonymous" `Node` which just means it uses a UUID to ensure a unique name. The other versions allow you to specify the name of the `Node` you're creating and optionally allow you to specify a `Dispatcher` other than the default if you want events occurring inside the `Node` to be in different threads than the initial, incoming events that enter the Graph at the "top".
 
+```java
+Node<String> countNode = graph.node("counter")
+                              .consume(new Consumer<String>() {
+                                public void accept(String s) {
+                                  atomicCounter.incrementAndGet();
+                                }
+                              });
+```
+
+Since this is the only `Node` currently created inside this `Graph`, sending a value into the `Graph` at this point would cause the "counter" `Node` to receive the value and then be dropped.
+
+If we want to start with a different `Node` and then route only certain elements to this counter, then we'd create another `Node` and use a `Predicate` to route the value to this `Node`.
+
+```java
+Node<String> startNode = graph.node("start")
+                              .when(new Predicate<String>() {
+                                public boolean test(String s) {
+                                  return s.startsWith(PACKET_PREFIX);
+                                }
+                              })
+                              .routeTo("counter");
+
+// Tells the Graph to use 'start' as a startNode
+graph.startNode("start");
+```
+
+A `Predicate` is basically a filter, something you'll be familiar with if you're using Reactor's `Stream` API. But Graphs are unique in that besides placing actions inline (after the `Predicate` definition) to process values that pass the test, Graphs can also route values to arbitrary Nodes. It's similar to a GOTO in the Basic programming language.
 
 ### What about Streams and Promises?
 
