@@ -1,5 +1,7 @@
 # Graph API for Reactor
 
+_NOTE:_ This code is *experimental*. Please file issues in this repo, ask questions on the [Reactor mailing list](https://groups.google.com/forum/#!forum/reactor-framework), or post questions on StackOverflow with the tag `#projectreactor` to discuss this API. Don't consider anything you see here final or production-ready! You've been warned. :)
+
 Reactor's Graph API is inspired by the Directed Acyclic Graph [1] concept and provides a concise way to wire artibrary actions together based on different routing predicates based on custom logic or the presence of a specific type of Exception.
 
 ### How to use the Graph API
