@@ -21,6 +21,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ * To run this example, you must specify your Twitter API consumer and oauth secrets. If you set the system properties
+ * on the command line when running this class, it should Just Work:
+ * <p>
+ * <pre>
+ *     -Dtwitter.consumerKey=
+ *     -Dtwitter.consumerSecret=
+ *     -Dtwitter.token=
+ *     -Dtwitter.tokenSecret=
+ *   </pre>
+ * </p>
+ * <p>
+ * Alternatively, you can fill in your own values in the example code, replacing the calls the System.getProperty().
+ * </p>
+ *
  * @author Jon Brisbin
  */
 public class TwitterGraphExample {
@@ -45,11 +59,11 @@ public class TwitterGraphExample {
 
 		// Count 'mentions' separately. That's any hashtag containing the word 'bieber'.
 		graph.node("tag.mentions", workQueue)
-		     .consume(new CountMentions());
+		     .consume(new Counter(mentionCounts));
 
 		// Count hashtags and naively trend them.
 		graph.node("tag.trending", workQueue)
-		     .consume(new CountTags())
+		     .consume(new Counter(tagCounts))
 		     .when(new IsTopTag())
 		     .then(new Function<String, Tuple2<String, Long>>() {
 			     @Override
@@ -91,25 +105,19 @@ public class TwitterGraphExample {
 		twitter.stop();
 	}
 
-	static class CountMentions implements Consumer<String> {
-		@Override
-		public void accept(String tag) {
-			AtomicLong counter = mentionCounts.get(tag);
-			if(null == counter) {
-				counter = new AtomicLong(0);
-				mentionCounts.put(tag, counter);
-			}
-			counter.incrementAndGet();
-		}
-	}
+	static class Counter implements Consumer<String> {
+		final Map<String, AtomicLong> metrics;
 
-	static class CountTags implements Consumer<String> {
+		Counter(Map<String, AtomicLong> metrics) {
+			this.metrics = metrics;
+		}
+
 		@Override
 		public void accept(String tag) {
-			AtomicLong counter = tagCounts.get(tag);
+			AtomicLong counter = metrics.get(tag);
 			if(null == counter) {
 				counter = new AtomicLong(0);
-				tagCounts.put(tag, counter);
+				metrics.put(tag, counter);
 			}
 			counter.incrementAndGet();
 		}
