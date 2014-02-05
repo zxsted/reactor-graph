@@ -47,6 +47,10 @@ graph.startNode("start");
 
 A `Predicate` is basically a filter, something you'll be familiar with if you're using Reactor's `Stream` API. But Graphs are unique in that besides placing actions inline (after the `Predicate` definition) to process values that pass the test, Graphs can also route values to arbitrary Nodes. It's similar to a GOTO in the Basic programming language.
 
+### Examples
+
+Check out the `graph-examples` submodule for examples of how to wire Nodes together and perform complex processing.
+
 ### What about Streams and Promises?
 
 If you've been using Reactor for building reactive applications, then you're probably familiar with Reactor's `Stream` and `Promise` API. The `Graph` is a complement to these APIs and is not intended to replace them. Instead, it targets a general asynchronous task problem rather than focusing on a specific one like a `Stream` does (namely: how do I process data asynchronously in an efficient, straight-line manner?).
