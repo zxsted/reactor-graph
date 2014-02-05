@@ -35,13 +35,13 @@ Since this is the only `Node` currently created inside this `Graph`, sending a v
 If we want to start with a different `Node` and then route only certain elements to this counter, then we'd create another `Node` and use a `Predicate` to route the value to this `Node`.
 
 ```java
-Node<String> startNode = graph.node("start")
-                              .when(new Predicate<String>() {
-                                public boolean test(String s) {
-                                  return s.startsWith(PACKET_PREFIX);
-                                }
-                              })
-                              .routeTo("counter");
+graph.node("start")
+     .when(new Predicate<String>() {
+       public boolean test(String s) {
+         return s.startsWith(PACKET_PREFIX);
+       }
+     })
+     .routeTo("counter");
 
 // Tells the Graph to use 'start' as a startNode
 graph.startNode("start");
