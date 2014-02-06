@@ -23,17 +23,15 @@ public class Node<T> {
 	private final String     name;
 	private final Graph<?>   graph;
 	private final Observable observable;
-	private final Node<?>    parent;
 
-	Node(Graph<?> graph, Observable observable, Node<?> parent) {
-		this(UUIDUtils.create().toString(), graph, observable, parent);
+	Node(Graph<?> graph, Observable observable) {
+		this(UUIDUtils.create().toString(), graph, observable);
 	}
 
-	Node(String name, Graph<?> graph, Observable observable, Node<?> parent) {
+	Node(String name, Graph<?> graph, Observable observable) {
 		this.name = name;
 		this.graph = graph;
 		this.observable = observable;
-		this.parent = parent;
 	}
 
 	/**
@@ -155,7 +153,7 @@ public class Node<T> {
 	}
 
 	<V> Node<V> createChild() {
-		return new Node<>(graph, observable, this);
+		return new Node<>(graph, observable);
 	}
 
 	<V> Route<V> createRoute() {

@@ -16,7 +16,6 @@ public class Route<T> {
 
 	private final Selector onValue     = Selectors.anonymous();
 	private final Selector onOtherwise = Selectors.anonymous();
-	private final Selector onError     = Selectors.anonymous();
 
 	private final Node<?>    node;
 	private final Observable observable;
@@ -37,19 +36,12 @@ public class Route<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	public Route<T> routeTo(String nodeName) {
-		final Node<T> routeToNode = (Node<T>)node.getGraph().getNode(nodeName);
+		final Node<T> newNode = (Node<T>)node.getGraph().getNode(nodeName);
 		observable.on(onValue, new Consumer<Event>() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void accept(Event ev) {
-				routeToNode.notifyValue(ev);
-			}
-		});
-		observable.on(onError, new Consumer<Event>() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public void accept(Event ev) {
-				routeToNode.notifyError(ev);
+				newNode.notifyValue(ev);
 			}
 		});
 		return this;
@@ -97,8 +89,14 @@ public class Route<T> {
 					V obj = fn.apply(ev.getData());
 					newRoute.notifyValue(ev.copy(obj));
 				} catch(Throwable t) {
-					newRoute.notifyError(ev.copy(t));
+					node.notifyError(ev.copy(t));
 				}
+			}
+		});
+		observable.on(onOtherwise, new Consumer<Event<T>>() {
+			@Override
+			public void accept(Event ev) {
+				newRoute.notifyOtherwise(ev);
 			}
 		});
 		return newRoute;
@@ -137,10 +135,6 @@ public class Route<T> {
 
 	void notifyOtherwise(Event<T> ev) {
 		observable.notify(onOtherwise.getObject(), ev);
-	}
-
-	void notifyError(Event<Throwable> ev) {
-		observable.notify(onError.getObject(), ev);
 	}
 
 }

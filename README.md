@@ -22,12 +22,12 @@ Graph<String> graph = Graph.create(env);
 Since Graphs are made up of Nodes, you need a `Node` to do any work. Create one from by calling the `Graph.node()` method (or one of its variants). The zero-arg version will return an "anonymous" `Node` which just means it uses a UUID to ensure a unique name. The other versions allow you to specify the name of the `Node` you're creating and optionally allow you to specify a `Dispatcher` other than the default if you want events occurring inside the `Node` to be in different threads than the initial, incoming events that enter the Graph at the "top".
 
 ```java
-Node<String> countNode = graph.node("counter")
-                              .consume(new Consumer<String>() {
-                                public void accept(String s) {
-                                  atomicCounter.incrementAndGet();
-                                }
-                              });
+graph.node("counter")
+     .consume(new Consumer<String>() {
+       public void accept(String s) {
+         atomicCounter.incrementAndGet();
+       }
+     });
 ```
 
 Since this is the only `Node` currently created inside this `Graph`, sending a value into the `Graph` at this point would cause the "counter" `Node` to receive the value and then be dropped.

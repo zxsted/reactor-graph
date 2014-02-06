@@ -153,7 +153,7 @@ public class Graph<T> implements Consumer<T> {
 		Assert.isTrue(!nodes.containsKey(name), "A Node is already created with name '" + name + "'");
 		Dispatcher d = (null != dispatcher ? dispatcher : defaultDispatcher);
 		Reactor reactor = Reactors.reactor(env, d);
-		Node<T> node = new Node<T>(name, this, reactor, null);
+		Node<T> node = new Node<>(name, this, reactor);
 		nodes.put(name, node);
 		return node;
 	}
